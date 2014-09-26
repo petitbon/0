@@ -48,7 +48,7 @@ func main() {
 
 func HMACSign(c *cli.Context) {
 	if len(c.Args()) > 0 {
-		println("message signed: ", c.Args()[0], c.String("secret"))
+		println("message: ", c.Args()[0], " secret: ", c.String("secret"), " signed: ", ComputeHmac256(c.Args()[0], c.String("secret")))
 	} else {
 		println("Please provide a message to sign.")
 	}
@@ -56,7 +56,7 @@ func HMACSign(c *cli.Context) {
 
 func HMACVerify(c *cli.Context) {
 	if len(c.Args()) > 0 {
-		println("message: ", c.Args()[0], " secret: ", c.String("secret"), " signedmessage: ", ComputeHmac256(c.Args()[0], c.String("secret")))
+		println("m"+c.Args()[0]+"s:"+c.String("secret")+" signedmessage: ", ComputeHmac256(c.Args()[0], c.String("secret")))
 	} else {
 		println("Please provide a message to sign.")
 	}
