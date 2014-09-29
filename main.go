@@ -123,17 +123,17 @@ func SimpleCurl(c *cli.Context) {
 	}
 
 	req, _ := http.NewRequest("GET", c.String("url"), nil)
-	resp, _ := client.Do(req)
-	defer resp.Body.Close()
-
-	req.Header.Add("User-Agent", "curl/7.30.0")
+	req.Header.Set("Content-Type", "text/plain; charset=utf-8")
+	req.Header.Set("User-Agent", "curl/7.30.0")
 	//t := time.Now()
 	req.Header.Add("Date", time.Now().UTC().Format(time.RFC1123))
-	string_to_sign := req.Method + "\n" + req.Header["Date"][0]
-	fmt.Println("string to sign " + string_to_sign)
+	string_to_sign := req.Method + " " + req.Header["Date"][0] + " " + req.Header["Content-Type"][0]
+	fmt.Println("string to sign \n" + string_to_sign)
 
 	signed_string := ComputeHmac256(string_to_sign, "secret")
 	req.Header.Add("Authorization", "Zero "+signed_string)
+	resp, _ := client.Do(req)
+	defer resp.Body.Close()
 
 	fmt.Println("Request Headers")
 	for key, value := range req.Header {
