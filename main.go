@@ -4,7 +4,11 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/base64"
+	"fmt"
+	"net"
+	"net/http"
 	"os"
+	"time"
 
 	"github.com/codegangsta/cli"
 )
@@ -19,6 +23,19 @@ func main() {
 		println("Type '0 -h' to summon help.")
 	}
 	app.Commands = []cli.Command{
+		{
+			Name:  "curl",
+			Usage: "Curl.",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:  "url, u",
+					Usage: "--url.",
+				},
+			},
+
+			Action: SimpleCurl,
+		},
+
 		{
 			Name:  "hmac-tag",
 			Usage: "Tag a --message using a --key. Use '0 hmactag -h' to summont help.",
@@ -59,20 +76,21 @@ func main() {
 	app.Run(os.Args)
 }
 
+// HMAC FUNCTIONS //////////////////////////////////////////
+
 func HMACSign(c *cli.Context) {
 	if len(c.FlagNames()) == 2 {
 		println("tag ", ComputeHmac256(c.String("message"), c.String("key")))
 	} else {
 		println("Please provide a --message and a --key.")
 	}
-
 }
 
 func HMACVerify(c *cli.Context) {
 	if len(c.FlagNames()) == 3 {
-		println("verified ", VerifyHmac256(c.String("message"), c.String("tag"), c.String("key")))
+		fmt.Println("verified ", VerifyHmac256(c.String("message"), c.String("tag"), c.String("key")))
 	} else {
-		println("Please provide a --message with a --key and a --tag.")
+		fmt.Println("Please provide a --message with a --key and a --tag.")
 	}
 }
 
@@ -92,3 +110,51 @@ func VerifyHmac256(message string, tag string, key string) bool {
 	return hmac.Equal(t, []byte(expectedMAC))
 }
 
+// CURL FUNCTIONS ////////////////////////////////////////////
+
+func SimpleCurl(c *cli.Context) {
+
+	transport := http.Transport{
+		Dial: dialTimeout,
+	}
+
+	client := http.Client{
+		Transport: &transport,
+	}
+
+	req, _ := http.NewRequest("GET", c.String("url"), nil)
+	resp, _ := client.Do(req)
+	defer resp.Body.Close()
+
+	req.Header.Add("User-Agent", "curl/7.30.0")
+	//t := time.Now()
+	req.Header.Add("Date", time.Now().UTC().Format(time.RFC1123))
+	string_to_sign := req.Method + "\n" + req.Header["Date"][0]
+	fmt.Println("string to sign " + string_to_sign)
+
+	signed_string := ComputeHmac256(string_to_sign, "secret")
+	req.Header.Add("Authorization", "Zero "+signed_string)
+
+	fmt.Println("Request Headers")
+	for key, value := range req.Header {
+		fmt.Println(key, ":", value)
+	}
+	fmt.Println("")
+	fmt.Println("Repsonse Status ", resp.Status)
+	fmt.Println("")
+
+	fmt.Println("Response Headers")
+	for key, value := range resp.Header {
+		fmt.Println(key, ":", value)
+	}
+
+	//	body, _ := ioutil.ReadAll(resp.Body)
+	//	fmt.Printf("%s", body)
+
+}
+
+var timeout = time.Duration(2 * time.Second)
+
+func dialTimeout(network, addr string) (net.Conn, error) {
+	return net.DialTimeout(network, addr, timeout)
+}
