@@ -9,7 +9,7 @@ import (
 	"net/http"
 	"os"
 	"time"
-
+	//"github.com/petitbon/zerolib"
 	"github.com/codegangsta/cli"
 )
 
@@ -114,19 +114,13 @@ func VerifyHmac256(message string, tag string, key string) bool {
 
 func SimpleCurl(c *cli.Context) {
 
-	transport := http.Transport{
-		Dial: dialTimeout,
-	}
-
-	client := http.Client{
-		Transport: &transport,
-	}
+	transport := http.Transport{Dial: dialTimeout}
+	client := http.Client{Transport: &transport}
 
 	req, _ := http.NewRequest("GET", c.String("url"), nil)
 	req.Header.Set("Content-Type", "text/plain; charset=utf-8")
 	req.Header.Set("User-Agent", "curl/7.30.0")
-	//t := time.Now()
-	req.Header.Add("Date", time.Now().UTC().Format(time.RFC1123))
+	req.Header.Set("Date", time.Now().UTC().Format(time.RFC1123))
 	string_to_sign := req.Method + " " + req.Header["Date"][0] + " " + req.Header["Content-Type"][0]
 	fmt.Println("string to sign \n" + string_to_sign)
 
