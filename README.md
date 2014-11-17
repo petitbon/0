@@ -36,6 +36,12 @@ GLOBAL OPTIONS:
 
 ###Example
 
-`0 hmac-tag --message "helloworld" --key "secret"`
+```
+0 hmac-tag --message "helloworld" --key "secret"
+tag  enwr9BlzSJvjsxitLxbHX8h1w0De7LEqP3myi7cTXJc=
+```
 
-`0 hmac-verify --message "helloworld" --key "secret" --tag "enwr9BlzSJvjsxitLxbHX8h1w0De7LEqP3myi7cTXJc="`
+```
+0 hmac-verify --message "helloworld" --key "secret" --tag "enwr9BlzSJvjsxitLxbHX8h1w0De7LEqP3myi7cTXJc="
+verified  true
+```
