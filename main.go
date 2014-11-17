@@ -16,7 +16,7 @@ import (
 func main() {
 
 	app := cli.NewApp()
-	app.Name = "zero"
+	app.Name = "0"
 	app.Usage = "Help me help you!"
 
 	app.Action = func(c *cli.Context) {
@@ -38,7 +38,7 @@ func main() {
 
 		{
 			Name:  "hmac-tag",
-			Usage: "Tag a --message using a --key. Use '0 hmactag -h' to summont help.",
+			Usage: "Tag a --message using a --key. Use '0 hmac-tag -h' to summont help.",
 			Flags: []cli.Flag{
 				cli.StringFlag{
 					Name:  "key, k",
