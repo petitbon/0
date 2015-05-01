@@ -1,0 +1,11 @@
+{
+	"ImportPath": "github.com/petitbon/0",
+	"GoVersion": "go1.4.2",
+	"Deps": [
+		{
+			"ImportPath": "github.com/codegangsta/cli",
+			"Comment": "1.2.0-33-gbfc92c2",
+			"Rev": "bfc92c213ef664d1061229997eac5cee319de775"
+		}
+	]
+}
